@@ -4,16 +4,17 @@ Site estático em HTML, CSS e JavaScript para estudar Sistemas Distribuídos.
 
 ## Materiais usados
 
-- `Sistema_distribuidos_COMPLETO_25_questoes.pdf`
-- `Atividade 230926 SD.pdf`
+- `materiais/Sistema distribuidos.pdf`
+- `materiais/Sistema_distribuidos_COMPLETO_25_questoes.pdf`
 
 ## Funcionalidades
 
-- Simulado de prova com 10, 20 ou 30 questões.
+- Simulado em duas partes: Parte 1 com 15 questões e Parte 2 com 14 questões.
+- Simulado completo com as 29 questões.
 - Treino com correção imediata.
 - Treino por assunto.
 - Refazer erros.
 - Revisão rápida.
 - Histórico e progresso local com `localStorage`.
 - Modo claro e escuro.
-- Link para abrir o PDF `materiais/sistema-distribuidos.pdf` no site publicado.
+- Links no cabeçalho para abrir os PDFs anexados.

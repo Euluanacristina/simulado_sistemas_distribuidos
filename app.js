@@ -137,6 +137,30 @@ function balancedPick(subject, count, mode, topic = "todos") {
 
 function startRound({ subjectId, mode, count, topic = "todos", label }) {
   const subject = STUDY_DATA.subjects[subjectId];
+  const fixedPart = subject.parts?.[mode];
+  if (fixedPart) {
+    const selected = fixedPart.map(id => questionById(subjectId, id)).filter(Boolean);
+    const seed = `${Date.now()}-${subjectId}-${mode}`;
+    state.subjectId = subjectId;
+    state.round = {
+      id: seed,
+      subjectId,
+      mode: "exam",
+      label,
+      topic,
+      current: 0,
+      submitted: false,
+      questions: selected.map((q, i) => ({
+        id: q.id,
+        optionOrder: shuffle(q.options.map(o => o.id), `${seed}-${q.id}-${i}`)
+      })),
+      answers: {}
+    };
+    saveRound();
+    renderRound();
+    return;
+  }
+
   const pool = topic === "todos" ? subject.questions : subject.questions.filter(q => q.topic === topic);
   const effectiveCount = Math.min(count, mode === "errors" ? weightedQuestions(subject, mode, topic).filter((q, i, arr) => arr.findIndex(x => x.id === q.id) === i).length : pool.length);
 
@@ -353,7 +377,8 @@ function dashboardHtml(subject) {
       ${stat("Aproveitamento", `${pct(correct, attempts)}%`)}
     </div>
     <div class="actions">
-      <button class="btn primary" data-start="exam10" type="button">Simulado de prova 10 questões</button>
+      <button class="btn primary" data-start="part1" type="button">Parte 1 - 15 questões</button>
+      <button class="btn primary" data-start="part2" type="button">Parte 2 - 14 questões</button>
       <button class="btn" data-start="training" type="button">Treino com correção imediata</button>
       <button class="btn" data-tab-short="revisao" type="button">Revisão de última hora</button>
       <button class="btn" data-tab-short="dificuldades" type="button">Revisar erros</button>
@@ -372,17 +397,20 @@ function simuladosHtml(subject) {
     <h3>Modos de estudo</h3>
     <div class="grid">
       <div class="card">
-        <h3>Treino com correção imediata</h3>
-        <p class="muted">Você responde, confirma e lê a explicação antes de avançar.</p>
-        <div class="actions"><button class="btn primary" data-start="training" type="button">Começar treino</button></div>
+        <h3>Simulado - Parte 1</h3>
+        <p class="muted">Questões 1 a 15 do arquivo completo. Correção ao entregar.</p>
+        <div class="actions"><button class="btn primary" data-start="part1" type="button">Fazer Parte 1</button></div>
       </div>
       <div class="card">
-        <h3>Simulado de prova</h3>
-        <p class="muted">Correção apenas ao finalizar. Você pode navegar e revisar antes de entregar.</p>
+        <h3>Simulado - Parte 2</h3>
+        <p class="muted">Questões 16 a 29 do arquivo completo. Correção ao entregar.</p>
+        <div class="actions"><button class="btn primary" data-start="part2" type="button">Fazer Parte 2</button></div>
+      </div>
+      <div class="card">
+        <h3>Simulado completo</h3>
+        <p class="muted">Todas as 29 questões em uma rodada, para revisão final.</p>
         <div class="actions">
-          <button class="btn primary" data-start="exam10" type="button">10 questões</button>
-          <button class="btn" data-start="exam20" type="button">20 questões</button>
-          <button class="btn" data-start="exam30" type="button">30 questões</button>
+          <button class="btn primary" data-start="full29" type="button">29 questões</button>
         </div>
       </div>
       <div class="card">
@@ -395,9 +423,9 @@ function simuladosHtml(subject) {
         </div>
       </div>
       <div class="card">
-        <h3>Refazer erros</h3>
-        <p class="muted">Prioriza questões e assuntos com maior dificuldade recorrente.</p>
-        <div class="actions"><button class="btn primary" data-start="errors" type="button">Treinar minhas dificuldades</button></div>
+        <h3>Treino com correção imediata</h3>
+        <p class="muted">Você responde, confirma e lê a explicação antes de avançar.</p>
+        <div class="actions"><button class="btn primary" data-start="training" type="button">Começar treino</button></div>
       </div>
     </div>`;
 }
@@ -465,6 +493,9 @@ function historicoHtml(subject) {
 function wireCommon(subject) {
   app.querySelectorAll("[data-start]").forEach(btn => btn.addEventListener("click", () => {
     const type = btn.dataset.start;
+    if (type === "part1") startRound({ subjectId: subject.id, mode: "part1", count: 15, label: "Simulado - Parte 1 (15 questões)" });
+    if (type === "part2") startRound({ subjectId: subject.id, mode: "part2", count: 14, label: "Simulado - Parte 2 (14 questões)" });
+    if (type === "full29") startRound({ subjectId: subject.id, mode: "full29", count: 29, label: "Simulado completo - 29 questões" });
     if (type === "training") startRound({ subjectId: subject.id, mode: "training", count: 10, label: "Treino com correção imediata" });
     if (type === "exam10") startRound({ subjectId: subject.id, mode: "exam", count: 10, label: "Simulado de prova - 10 questões" });
     if (type === "exam20") startRound({ subjectId: subject.id, mode: "exam", count: 20, label: "Simulado de prova - 20 questões" });
