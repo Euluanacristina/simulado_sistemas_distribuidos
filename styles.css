@@ -69,6 +69,18 @@ button:focus-visible, select:focus-visible, a:focus-visible {
   letter-spacing: 0;
 }
 
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.material-link {
+  text-decoration: none;
+}
+
 .eyebrow {
   margin: 0 0 4px;
   color: var(--brand);
@@ -356,6 +368,11 @@ select {
 
   .topbar {
     align-items: flex-start;
+  }
+
+  .header-actions {
+    width: 100%;
+    justify-content: flex-start;
   }
 }
 

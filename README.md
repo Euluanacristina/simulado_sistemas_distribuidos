@@ -16,4 +16,4 @@ Site estático em HTML, CSS e JavaScript para estudar Sistemas Distribuídos.
 - Revisão rápida.
 - Histórico e progresso local com `localStorage`.
 - Modo claro e escuro.
-
+- Link para abrir o PDF `materiais/sistema-distribuidos.pdf` no site publicado.
